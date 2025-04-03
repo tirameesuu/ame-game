@@ -25,9 +25,16 @@
             padding: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .question-counter {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+        }
         .story-text {
-            font-size: 18px;
             margin-bottom: 30px;
+            font-size: 30px;
         }
         .choices {
             display: flex;
@@ -39,11 +46,13 @@
             color: white;
             border: none;
             padding: 12px 20px;
-            font-size: 16px;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 30px;
+            margin-bottom: 2rem;
         }
+
         .choice-btn:hover {
             background-color: #2c7744;
         }
@@ -59,6 +68,7 @@
     <h1>Amazon Rainforest Survival</h1>
     
     <div class="game-container">
+        <div id="question-counter" class="question-counter">1/12</div>
         <p id="story-text" class="story-text">You wake up disoriented in the Amazon rainforest and must decide which way to go.</p>
         
         <div id="choices" class="choices">
@@ -67,516 +77,139 @@
     </div>
     
     <footer>
-        <p>Adventure Game &copy; 2025</p>
+        <p>Ame Boobwiwat &copy; 2025</p>
     </footer>
 
     <script>
-        // Game data (converted from Python)
+        // Game data
         const gameData = {
-            "start": {
-                "text": "You wake up disoriented in the Amazon rainforest and must decide which way to go.",
-                "choices": [
-                    {"text": "Go to the River", "next": "river"},
-                    {"text": "Stay nearby", "next": "village"}
-                ]
-            },
-            "river": {
-                "text": "You reach a river. The water looks clean enough to drink, and you could try to follow it downstream.",
-                "choices": [
-                    {"text": "Approach a nearby village", "next": "village_river"},
-                    {"text": "Float downstream", "next": "downstream"}
-                ]
-            },
-            "village_river": {
-                "text": "You float towards a village of indigenous people. What do you do?",
-                "choices": [
-                    {"text": "Beg for scraps", "next": "beg"},
-                    {"text": "Offer to work for food", "next": "work"}
-                ]
-            },
-            "village": {
-                "text": "You stay nearby and find a small abandoned camp. What do you do?",
-                "choices": [
-                    {"text": "Search for supplies", "next": "supplies"},
-                    {"text": "Try to make a fire", "next": "fire"}
-                ]
-            },
-            "beg": {
-                "text": "The locals take pity on you and offer some food. They also point you in the direction of safety.",
-                "choices": [
-                    {"text": "Thank them and follow their directions", "next": "safety"},
-                    {"text": "Ask to stay with them", "next": "stay"}
-                ]
-            },
-            "work": {
-                "text": "The villagers appreciate your willingness to work. They teach you how to fish and gather food.",
-                "choices": [
-                    {"text": "Learn survival skills", "next": "skills"},
-                    {"text": "Ask them for a way home", "next": "guide"}
-                ]
-            },
-            "downstream": {
-                "text": "You continue downstream and encounter dangerous rapids.",
-                "choices": [
-                    {"text": "Try to navigate through", "next": "rapids"},
-                    {"text": "Swim to shore", "next": "shore"}
-                ]
-            },
-            "supplies": {
-                "text": "You find a backpack with some basic survival tools and a map.",
-                "choices": [
-                    {"text": "Use the map to find your way out", "next": "map"},
-                    {"text": "Use the tools to build a shelter", "next": "shelter"}
-                ]
-            },
-            "fire": {
-                "text": "You successfully make a fire. The smoke might attract rescuers or predators.",
-                "choices": [
-                    {"text": "Keep the fire going", "next": "rescue"},
-                    {"text": "Put out the fire", "next": "night"}
-                ]
-            },
-            "safety": {
-                "text": "Following their directions, you eventually find a ranger station and are rescued. Congratulations!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "stay": {
-                "text": "The villagers allow you to stay. Over time, you learn their ways and become part of their community.",
-                "choices": [
-                    {"text": "Start a new life here", "next": "new_life"},
-                    {"text": "Eventually ask to leave", "next": "leave_later"}
-                ]
-            },
-            "skills": {
-                "text": "After weeks of training, you become proficient in jungle survival. You could survive on your own now.",
-                "choices": [
-                    {"text": "Strike out on your own", "next": "solo"},
-                    {"text": "Stay with the village", "next": "stay"}
-                ]
-            },
-            "guide": {
-                "text": "The villagers offer to guide you to a nearby town where you can find help getting home.",
-                "choices": [
-                    {"text": "Accept their help", "next": "town"},
-                    {"text": "Thank them but decide to stay", "next": "stay"}
-                ]
-            },
-            "rapids": {
-                "text": "You attempt to navigate the rapids but your makeshift raft breaks apart. You barely make it to shore alive.",
-                "choices": [
-                    {"text": "Follow the river on foot", "next": "river_trek"},
-                    {"text": "Head inland", "next": "inland"}
-                ]
-            },
-            "shore": {
-                "text": "You swim to shore before the rapids. Now you're safe but wet and need to find shelter soon.",
-                "choices": [
-                    {"text": "Build a shelter", "next": "shelter"},
-                    {"text": "Look for signs of civilization", "next": "search_civ"}
-                ]
-            },
-            "map": {
-                "text": "The map shows you're about 20 miles from a ranger station. It's a difficult journey through dense jungle.",
-                "choices": [
-                    {"text": "Follow the map carefully", "next": "ranger_station"},
-                    {"text": "Try to find an easier path", "next": "lost"}
-                ]
-            },
-            "shelter": {
-                "text": "You build a sturdy shelter that will protect you from rain and predators. Now you need food.",
-                "choices": [
-                    {"text": "Hunt for food", "next": "hunt"},
-                    {"text": "Forage for berries and fruits", "next": "forage"}
-                ]
-            },
-            "rescue": {
-                "text": "Your fire's smoke is spotted by a rescue helicopter! They lower a basket to pull you up.",
-                "choices": [
-                    {"text": "Get into the basket", "next": "helicopter_rescue"},
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "night": {
-                "text": "You put out the fire and spend a cold, dark night in the jungle. Strange noises keep you awake.",
-                "choices": [
-                    {"text": "Try to sleep anyway", "next": "sleep"},
-                    {"text": "Relight the fire", "next": "fire_relight"}
-                ]
-            },
-            "new_life": {
-                "text": "Years pass and you become fully integrated into the tribe. You find happiness in this simpler life. THE END.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "leave_later": {
-                "text": "After months with the tribe, they guide you to a town. You return to civilization with amazing stories.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "solo": {
-                "text": "With your new skills, you navigate the jungle successfully and reach a ranger station. You're rescued!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "town": {
-                "text": "The villagers guide you to a small town where you find help getting back home. You made it!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "river_trek": {
-                "text": "Following the river is tough but ensures you won't get lost. After days of travel, you spot a boat!",
-                "choices": [
-                    {"text": "Signal the boat", "next": "boat_rescue"},
-                    {"text": "Hide and observe first", "next": "observe_boat"}
-                ]
-            },
-            "inland": {
-                "text": "You head inland and become hopelessly lost in the dense jungle.",
-                "choices": [
-                    {"text": "Try to retrace your steps", "next": "lost_worse"},
-                    {"text": "Climb a tree to get your bearings", "next": "climb_tree"}
-                ]
-            },
-            "search_civ": {
-                "text": "You search for signs of civilization and find what looks like an old trail.",
-                "choices": [
-                    {"text": "Follow the trail", "next": "old_trail"},
-                    {"text": "Set up camp for the night", "next": "night_camp"}
-                ]
-            },
-            "ranger_station": {
-                "text": "After a grueling journey, you reach the ranger station. They're surprised to see you but offer immediate help.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "lost": {
-                "text": "Trying to find an easier path, you get disoriented and completely lost.",
-                "choices": [
-                    {"text": "Panic and run", "next": "panic"},
-                    {"text": "Stay calm and make a plan", "next": "calm_plan"}
-                ]
-            },
-            "hunt": {
-                "text": "Your hunting attempts are unsuccessful and you've wasted energy. You're now hungry and weak.",
-                "choices": [
-                    {"text": "Try fishing instead", "next": "fishing"},
-                    {"text": "Look for fruit trees", "next": "fruit_trees"}
-                ]
-            },
-            "forage": {
-                "text": "You find various fruits and berries. Some look safe to eat, but you're not sure about others.",
-                "choices": [
-                    {"text": "Eat only what you recognize", "next": "safe_eating"},
-                    {"text": "Risk trying the unknown fruits", "next": "food_poisoning"}
-                ]
-            },
-            "helicopter_rescue": {
-                "text": "The helicopter brings you to safety. After medical treatment, you're able to return home. You survived!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "sleep": {
-                "text": "Despite the noises, you manage to sleep a little. In the morning, you wake to find jaguar tracks near your shelter.",
-                "choices": [
-                    {"text": "Relocate immediately", "next": "relocate"},
-                    {"text": "Reinforce your shelter", "next": "reinforce"}
-                ]
-            },
-            "fire_relight": {
-                "text": "You relight the fire, and its warmth and light give you comfort. But what attracted your attention also attracts others...",
-                "choices": [
-                    {"text": "Keep watch all night", "next": "night_watch"},
-                    {"text": "Try to sleep by the fire", "next": "fire_sleep"}
-                ]
-            },
-            "boat_rescue": {
-                "text": "The boat sees your signal and rescues you. You're finally heading back to civilization!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "observe_boat": {
-                "text": "You observe the boat and notice it's a research vessel. They seem trustworthy.",
-                "choices": [
-                    {"text": "Signal them now", "next": "boat_rescue"},
-                    {"text": "Continue on your own", "next": "continue_alone"}
-                ]
-            },
-            "lost_worse": {
-                "text": "Trying to retrace your steps only gets you more lost. Night is falling.",
-                "choices": [
-                    {"text": "Make emergency shelter", "next": "emergency_shelter"},
-                    {"text": "Keep moving in darkness", "next": "night_danger"}
-                ]
-            },
-            "climb_tree": {
-                "text": "From the treetop, you spot smoke in the distance - possibly a village!",
-                "choices": [
-                    {"text": "Head toward the smoke", "next": "find_village"},
-                    {"text": "Stay put and make a signal fire", "next": "signal_fire"}
-                ]
-            },
-            "old_trail": {
-                "text": "The trail leads to an abandoned research station with supplies and a radio!",
-                "choices": [
-                    {"text": "Use the radio", "next": "radio_rescue"},
-                    {"text": "Gather supplies and continue", "next": "resupply"}
-                ]
-            },
-            "night_camp": {
-                "text": "You set up camp for the night and rest well. In the morning, you hear voices nearby.",
-                "choices": [
-                    {"text": "Call out to them", "next": "call_voices"},
-                    {"text": "Hide and observe", "next": "observe_people"}
-                ]
-            },
-            "panic": {
-                "text": "Panicking, you run blindly through the jungle and fall into a ravine. Injured, you can't climb out.",
-                "choices": [
-                    {"text": "Call for help", "next": "call_help"},
-                    {"text": "Try to find another way out", "next": "find_exit"}
-                ]
-            },
-            "calm_plan": {
-                "text": "Staying calm, you make a plan to systematically explore the area. You eventually find your way back to a landmark.",
-                "choices": [
-                    {"text": "Continue towards safety", "next": "towards_safety"},
-                    {"text": "Set up camp here", "next": "landmark_camp"}
-                ]
-            },
-            "fishing": {
-                "text": "You craft a simple fishing spear and catch a few small fish. It's not much but enough to regain strength.",
-                "choices": [
-                    {"text": "Rest and continue fishing", "next": "more_fishing"},
-                    {"text": "Move on with new energy", "next": "move_on"}
-                ]
-            },
-            "fruit_trees": {
-                "text": "You find a grove of banana trees! You harvest plenty of food.",
-                "choices": [
-                    {"text": "Feast and rest", "next": "rest_bananas"},
-                    {"text": "Take some and keep moving", "next": "bananas_journey"}
-                ]
-            },
-            "safe_eating": {
-                "text": "You safely eat the fruits you recognize. While still hungry, you avoid getting sick.",
-                "choices": [
-                    {"text": "Search for more food", "next": "more_foraging"},
-                    {"text": "Continue your journey", "next": "journey_continue"}
-                ]
-            },
-            "food_poisoning": {
-                "text": "You try the unknown fruits and become violently ill. You're weak and dehydrated.",
-                "choices": [
-                    {"text": "Rest and recover", "next": "slow_recovery"},
-                    {"text": "Try to find water", "next": "water_search"}
-                ]
-            },
-            "relocate": {
-                "text": "You relocate to a safer area away from the jaguar's territory.",
-                "choices": [
-                    {"text": "Build a new shelter", "next": "new_shelter"},
-                    {"text": "Keep moving towards civilization", "next": "keep_moving"}
-                ]
-            },
-            "reinforce": {
-                "text": "You reinforce your shelter to protect against predators.",
-                "choices": [
-                    {"text": "Stay and rest", "next": "rest_shelter"},
-                    {"text": "Set traps around your shelter", "next": "set_traps"}
-                ]
-            },
-            "night_watch": {
-                "text": "Keeping watch all night, you see various animals but remain safe. You're exhausted in the morning.",
-                "choices": [
-                    {"text": "Rest during the day", "next": "day_rest"},
-                    {"text": "Push on despite fatigue", "next": "fatigue_journey"}
-                ]
-            },
-            "fire_sleep": {
-                "text": "You fall asleep by the fire. You wake to find it has attracted friendly indigenous hunters who offer help.",
-                "choices": [
-                    {"text": "Accept their help", "next": "hunter_help"},
-                    {"text": "Thank them but continue alone", "next": "continue_alone"}
-                ]
-            },
-            "continue_alone": {
-                "text": "You decide to continue alone. After many hardships, you eventually find your way to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "emergency_shelter": {
-                "text": "Your emergency shelter saves you from the elements. In the morning, you have a new chance.",
-                "choices": [
-                    {"text": "Try again", "next": "start"}
-                ]
-            },
-            "night_danger": {
-                "text": "Moving in darkness proves dangerous. You survive but are injured.",
-                "choices": [
-                    {"text": "Try again", "next": "start"}
-                ]
-            },
-            "find_village": {
-                "text": "You find the village and they welcome you. You're saved!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "signal_fire": {
-                "text": "Your signal fire attracts a rescue team. You're saved!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "radio_rescue": {
-                "text": "The radio works! You contact rescue services and they triangulate your position. Help is on the way!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "resupply": {
-                "text": "With new supplies, you continue your journey and eventually reach safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "call_voices": {
-                "text": "The voices belong to a research team. They take you to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "observe_people": {
-                "text": "You observe that they're a rescue team looking for you! You make contact and are saved.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "call_help": {
-                "text": "Your calls echo but no one hears. After days, weakened, you're spotted by a passing helicopter.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "find_exit": {
-                "text": "You find another way out of the ravine and continue your journey to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "towards_safety": {
-                "text": "You successfully navigate to safety. Congratulations!",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "landmark_camp": {
-                "text": "You camp at the landmark. The next day, rescuers find you.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "more_fishing": {
-                "text": "Your fishing skills improve and you survive until rescuers find you.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "move_on": {
-                "text": "With new energy, you journey on and eventually find your way to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "rest_bananas": {
-                "text": "Rested and fed, you're found by a passing boat the next day.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "bananas_journey": {
-                "text": "The bananas sustain you on your journey to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "more_foraging": {
-                "text": "Your foraging skills improve and you survive until rescue arrives.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "journey_continue": {
-                "text": "You continue your journey and eventually reach a ranger station.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "slow_recovery": {
-                "text": "You slowly recover and eventually continue your journey to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "water_search": {
-                "text": "Despite your weakness, you find water and recover enough to continue to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "new_shelter": {
-                "text": "Your new shelter keeps you safe until rescue arrives.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "keep_moving": {
-                "text": "Your determination pays off as you eventually reach civilization.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "rest_shelter": {
-                "text": "Rested, you continue your journey and find rescue.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "set_traps": {
-                "text": "Your traps keep predators away until rescue arrives.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "day_rest": {
-                "text": "Rested, you're able to continue and eventually find help.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "fatigue_journey": {
-                "text": "Despite your fatigue, your determination gets you to safety.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            },
-            "hunter_help": {
-                "text": "The hunters guide you to their village and eventually help you return to civilization.",
-                "choices": [
-                    {"text": "Play Again", "next": "start"}
-                ]
-            }
-        };
+        "start": {
+            "text": "You wake up disoriented in the Amazon rainforest and must decide which way to go.",
+            "choices": [
+            { "text": "Follow the river", "next": "river" },
+            { "text": "Head toward an abandoned camp", "next": "camp" }
+            ],
+            "questionNumber": 1
+        },
+        "river": {
+            "text": "You follow the river and soon come upon a small indigenous village along the bank.",
+            "choices": [
+            { "text": "Approach the village", "next": "village" },
+            { "text": "Float downstream", "next": "downstream" }
+            ],
+            "questionNumber": 2
+        },
+        "camp": {
+            "text": "You find an abandoned camp deep in the forest. It might hold useful supplies.",
+            "choices": [
+            { "text": "Search for supplies", "next": "supplies" },
+            { "text": "Try to build a fire for warmth", "next": "fire" }
+            ],
+            "questionNumber": 2
+        },
+        "village": {
+            "text": "The villagers notice you and offer food along with directions to safety—but their help may come at a price.",
+            "choices": [
+            { "text": "Accept their help", "next": "safety" },
+            { "text": "Refuse and continue on your own", "next": "jungle" }
+            ],
+            "questionNumber": 3
+        },
+        "downstream": {
+            "text": "Floating downstream, you encounter treacherous rapids that threaten to capsize your makeshift raft.",
+            "choices": [
+            { "text": "Attempt to navigate the rapids", "next": "rapids" },
+            { "text": "Abandon the raft and swim to shore", "next": "shore" }
+            ],
+            "questionNumber": 3
+        },
+        "supplies": {
+            "text": "Inside a dusty backpack you find basic survival tools and a map showing a route to a ranger station.",
+            "choices": [
+            { "text": "Follow the map to the ranger station", "next": "ranger_station" },
+            { "text": "Use the tools to build a shelter", "next": "shelter" }
+            ],
+            "questionNumber": 3
+        },
+        "fire": {
+            "text": "You manage to build a fire. The rising smoke might attract help—or unwanted attention.",
+            "choices": [
+            { "text": "Keep the fire burning", "next": "rescue" },
+            { "text": "Extinguish the fire to remain hidden", "next": "night" }
+            ],
+            "questionNumber": 3
+        },
+        "rapids": {
+            "text": "Your raft is battered by the rapids. You barely make it to shore, injured and exhausted.",
+            "choices": [
+            { "text": "Stumble toward the village", "next": "village" },
+            { "text": "Seek shelter in the dense jungle", "next": "jungle" }
+            ],
+            "questionNumber": 4
+        },
+        "shore": {
+            "text": "After a strenuous swim, you reach the riverbank. Now you must choose: look for civilization or risk venturing into the jungle.",
+            "choices": [
+            { "text": "Search for signs of civilization", "next": "village" },
+            { "text": "Head deeper into the jungle", "next": "jungle" }
+            ],
+            "questionNumber": 4
+        },
+        "safety": {
+            "text": "With the villagers' guidance, you are brought to safety and rescued. Congratulations!",
+            "choices": [
+            { "text": "Play Again", "next": "start" }
+            ],
+            "questionNumber": 4
+        },
+        "jungle": {
+            "text": "Lost in the dense jungle, dangers lurk at every turn. Your journey grows perilous as you confront wild animals and the harsh elements.",
+            "choices": [
+            { "text": "Fight your way through", "next": "death" },
+            { "text": "Try to hide and wait for rescue", "next": "death" }
+            ],
+            "questionNumber": 5
+        },
+        "ranger_station": {
+            "text": "Following the map's route, you eventually reach a ranger station. They rescue you and bring you to safety.",
+            "choices": [
+            { "text": "Play Again", "next": "start" }
+            ],
+            "questionNumber": 4
+        },
+        "shelter": {
+            "text": "Your makeshift shelter offers temporary protection, but the jungle remains unforgiving.",
+            "choices": [
+            { "text": "Wait for rescue", "next": "death" },
+            { "text": "Venture out in search of help", "next": "jungle" }
+            ],
+            "questionNumber": 4
+        },
+        "rescue": {
+            "text": "The smoke from your fire is spotted by a rescue team. They pull you to safety.",
+            "choices": [
+            { "text": "Play Again", "next": "start" }
+            ],
+            "questionNumber": 4
+        },
+        "night": {
+            "text": "In the darkness you are vulnerable. The night brings dangers that you are ill-prepared to face.",
+            "choices": [
+            { "text": "Succumb to the dangers of the jungle", "next": "death" }
+            ],
+            "questionNumber": 4
+        },
+        "death": {
+            "text": "Tragically, you have met your end in the unforgiving jungle. Game Over.",
+            "choices": [
+            { "text": "Play Again", "next": "start" }
+            ],
+            "questionNumber": 6
+        }
+    };
+
+        // Total number of possible questions in the longest path
+        const TOTAL_QUESTIONS = 6;
 
         // Initialize the game when the page loads
         let currentNode = "start";
@@ -598,6 +231,10 @@
         function updateGame() {
             // Get the current node data
             const node = gameData[currentNode];
+            
+            // Update the question counter
+            const questionNumber = node.questionNumber || 1;
+            document.getElementById("question-counter").textContent = `${questionNumber}/${TOTAL_QUESTIONS}`;
             
             // Update the story text
             document.getElementById("story-text").textContent = node.text;
