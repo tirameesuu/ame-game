@@ -1,267 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Rainforest Survival</title>
-    <style>
-        body {
-            font-family: "Gill Sans", sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #2c7744;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .game-container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .question-counter {
-            text-align: right;
-            font-size: 16px;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        .story-text {
-            margin-bottom: 50px;
-            font-size: 30px;
-        }
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .choice-btn {
-            background-color: #3e8e41;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 20px;
-            margin-bottom: 1rem;
-        }
-
-        .choice-btn:hover {
-            background-color: #2c7744;
-        }
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-        }
-    </style>
-</head>
-<body>
-    <h1>Amazon Rainforest Survival</h1>
-    
-    <div class="game-container">
-        <div id="question-counter" class="question-counter">1/12</div>
-        <p id="story-text" class="story-text">You wake up disoriented in the Amazon rainforest and must decide which way to go.</p>
-        
-        <div id="choices" class="choices">
-            <!-- Choices will be inserted here by JavaScript -->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Amazon Rainforest Survival</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <!-- Start Page (shown on page load) -->
+        <div id="start-page">
+            <h1>Amazon Rainforest Survival</h1>
+            <button id="play-button" class="choice-btn">Play</button>
         </div>
-    </div>
-    
-    <footer>
-        <p>Ame Boonwiwat &copy; 2025</p>
-    </footer>
 
-    <script>
-        // Game data
-        const gameData = {
-        "start": {
-            "text": "You wake up disoriented in the Amazon rainforest and must decide which way to go.",
-            "choices": [
-            { "text": "Follow the river", "next": "river" },
-            { "text": "Head toward an abandoned camp", "next": "camp" }
-            ],
-            "questionNumber": 1
-        },
-        "river": {
-            "text": "You follow the river and soon come upon a small indigenous village along the bank.",
-            "choices": [
-            { "text": "Approach the village", "next": "village" },
-            { "text": "Float downstream", "next": "downstream" }
-            ],
-            "questionNumber": 2
-        },
-        "camp": {
-            "text": "You find an abandoned camp deep in the forest. It might hold useful supplies.",
-            "choices": [
-            { "text": "Search for supplies", "next": "supplies" },
-            { "text": "Try to build a fire for warmth", "next": "fire" }
-            ],
-            "questionNumber": 2
-        },
-        "village": {
-            "text": "The villagers notice you and offer food along with directions to safety—but their help may come at a price.",
-            "choices": [
-            { "text": "Accept their help", "next": "safety" },
-            { "text": "Refuse and continue on your own", "next": "jungle" }
-            ],
-            "questionNumber": 3
-        },
-        "downstream": {
-            "text": "Floating downstream, you encounter treacherous rapids that threaten to capsize your makeshift raft.",
-            "choices": [
-            { "text": "Attempt to navigate the rapids", "next": "rapids" },
-            { "text": "Abandon the raft and swim to shore", "next": "shore" }
-            ],
-            "questionNumber": 3
-        },
-        "supplies": {
-            "text": "Inside a dusty backpack you find basic survival tools and a map showing a route to a ranger station.",
-            "choices": [
-            { "text": "Follow the map to the ranger station", "next": "ranger_station" },
-            { "text": "Use the tools to build a shelter", "next": "shelter" }
-            ],
-            "questionNumber": 3
-        },
-        "fire": {
-            "text": "You manage to build a fire. The rising smoke might attract help—or unwanted attention.",
-            "choices": [
-            { "text": "Keep the fire burning", "next": "rescue" },
-            { "text": "Extinguish the fire to remain hidden", "next": "night" }
-            ],
-            "questionNumber": 3
-        },
-        "rapids": {
-            "text": "Your raft is battered by the rapids. You barely make it to shore, injured and exhausted.",
-            "choices": [
-            { "text": "Stumble toward the village", "next": "village" },
-            { "text": "Seek shelter in the dense jungle", "next": "jungle" }
-            ],
-            "questionNumber": 4
-        },
-        "shore": {
-            "text": "After a strenuous swim, you reach the riverbank. Now you must choose: look for civilization or risk venturing into the jungle.",
-            "choices": [
-            { "text": "Search for signs of civilization", "next": "village" },
-            { "text": "Head deeper into the jungle", "next": "jungle" }
-            ],
-            "questionNumber": 4
-        },
-        "safety": {
-            "text": "With the villagers' guidance, you are brought to safety and rescued. Congratulations!",
-            "choices": [
-            { "text": "Play Again", "next": "start" }
-            ],
-            "questionNumber": 4
-        },
-        "jungle": {
-            "text": "Lost in the dense jungle, dangers lurk at every turn. Your journey grows perilous as you confront wild animals and the harsh elements.",
-            "choices": [
-            { "text": "Fight your way through", "next": "death" },
-            { "text": "Try to hide and wait for rescue", "next": "death" }
-            ],
-            "questionNumber": 5
-        },
-        "ranger_station": {
-            "text": "Following the map's route, you eventually reach a ranger station. They rescue you and bring you to safety.",
-            "choices": [
-            { "text": "Play Again", "next": "start" }
-            ],
-            "questionNumber": 4
-        },
-        "shelter": {
-            "text": "Your makeshift shelter offers temporary protection, but the jungle remains unforgiving.",
-            "choices": [
-            { "text": "Wait for rescue", "next": "death" },
-            { "text": "Venture out in search of help", "next": "jungle" }
-            ],
-            "questionNumber": 4
-        },
-        "rescue": {
-            "text": "The smoke from your fire is spotted by a rescue team. They pull you to safety.",
-            "choices": [
-            { "text": "Play Again", "next": "start" }
-            ],
-            "questionNumber": 4
-        },
-        "night": {
-            "text": "In the darkness you are vulnerable. The night brings dangers that you are ill-prepared to face.",
-            "choices": [
-            { "text": "Succumb to the dangers of the jungle", "next": "death" }
-            ],
-            "questionNumber": 4
-        },
-        "death": {
-            "text": "Tragically, you have met your end in the unforgiving jungle. Game Over.",
-            "choices": [
-            { "text": "Play Again", "next": "start" }
-            ],
-            "questionNumber": 6
-        }
-    };
-
-        // Total number of possible questions in the longest path
-        const TOTAL_QUESTIONS = 6;
-
-        // Initialize the game when the page loads
-        let currentNode = "start";
-
-        // Function to save game state to local storage
-        function saveGame() {
-            localStorage.setItem("adventureGameState", currentNode);
-        }
-
-        // Function to load game state from local storage
-        function loadGame() {
-            const savedState = localStorage.getItem("adventureGameState");
-            if (savedState && gameData[savedState]) {
-                currentNode = savedState;
-            }
-        }
-
-        // Function to update the game display
-        function updateGame() {
-            // Get the current node data
-            const node = gameData[currentNode];
+        <!-- Game Container (hidden until Play is clicked) -->
+        <div id="game-container" class="game-container" style="display: none; text-align: center;">
+            <div id="question-counter" class="question-counter">1/12</div>
+            <p id="story-text" class="story-text">You wake up disoriented in the Amazon rainforest and must decide which way to go.</p>
+            <button id="reset" class="reset">Back to Start</button>
             
-            // Update the question counter
-            const questionNumber = node.questionNumber || 1;
-            document.getElementById("question-counter").textContent = `${questionNumber}/${TOTAL_QUESTIONS}`;
-            
-            // Update the story text
-            document.getElementById("story-text").textContent = node.text;
-            
-            // Clear existing choices
-            const choicesDiv = document.getElementById("choices");
-            choicesDiv.innerHTML = "";
-            
-            // Add new choice buttons
-            node.choices.forEach(choice => {
-                const button = document.createElement("button");
-                button.className = "choice-btn";
-                button.textContent = choice.text;
-                button.addEventListener("click", () => {
-                    currentNode = choice.next;
-                    updateGame();
-                    saveGame(); // Save the game after each choice
-                });
-                choicesDiv.appendChild(button);
-            });
-        }
+            <div id="choices" class="choices">
+                <!-- Choices will be inserted here by JavaScript -->
+            </div>
+        </div>
 
-        // When the page loads
-        document.addEventListener("DOMContentLoaded", () => {
-            loadGame(); // Try to load a saved game
-            updateGame(); // Update the display
-        });
-    </script>
-</body>
+        <!-- Results Page (hidden until a result is reached) -->
+        <div id="results-page" style="display: none; text-align: center;">
+            <h2>Results</h2>
+            <p id="results-text"></p>
+            <button id="play-again-button" class="choice-btn">Play Again</button>
+        </div>
+
+        <footer>
+            <p>Ame Boonwiwat &copy; 2025</p>
+        </footer>
+
+        <script src="game.js"></script>
+    </body>
 </html>
